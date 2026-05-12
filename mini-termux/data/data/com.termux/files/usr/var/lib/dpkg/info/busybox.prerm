@@ -1,0 +1,11 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# Automatically added by termux_step_update_alternatives
+if [ "$1" = 'remove' ] || [ "$1" != 'upgrade' ] || [ "debian" = 'pacman' ]; then
+  if [ -x "/data/data/com.termux/files/usr/bin/update-alternatives" ]; then
+    update-alternatives --remove "vi" "/data/data/com.termux/files/usr/libexec/busybox/vi"
+    update-alternatives --remove "editor" "/data/data/com.termux/files/usr/libexec/busybox/vi"
+    update-alternatives --remove "pager" "/data/data/com.termux/files/usr/libexec/busybox/less"
+    update-alternatives --remove "nc" "/data/data/com.termux/files/usr/libexec/busybox/nc"
+  fi
+fi
+# End automatically added section

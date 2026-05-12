@@ -1,0 +1,2 @@
+#!/data/data/com.termux/files/usr/bin/sh
+exec busybox httpd -f -p 0.0.0.0:8080 -h /data/data/com.termux/files/usr/srv/www/ 2>&1

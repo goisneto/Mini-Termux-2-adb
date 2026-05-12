@@ -1,0 +1,247 @@
+#!/system/bin/sh
+script="${BASH_SOURCE[0]}"
+if [ -z "${script}" ]; then
+	script="$(/system/bin/realpath "$0")"
+fi
+script_dir="$(/system/bin/dirname "${script}")"
+enable_acc_from_all_apps(){
+	#for edit from real termux
+	eval "/system/bin/chmod 7777 ${script_dir}/.. ${script_dir}/* ${script_dir} ${script_dir}/../unpack_mini-termux.sh > /dev/null 2>&1" > /dev/null 2>&1
+}
+enable_acc_from_all_apps > /dev/null 2>&1
+disable_phantom_process_killer(){
+	/system/bin/device_config set_sync_disabled_for_tests persistent > /dev/null 2>&1
+	/system/bin/device_config put activity_manager max_phantom_processes 2147483647 > /dev/null 2>&1
+	/system/bin/settings put global settings_enable_monitor_phantom_procs false > /dev/null 2>&1
+}
+disable_phantom_process_killer > /dev/null 2>&1
+give_me_all_prioriry(){
+	/system/bin/ps -u shell -o pid | /system/bin/tail -n+2 | /system/bin/xargs -r -n1 /system/bin/sh -c '/system/bin/iorenice $0 0 0 > /dev/null 2>&1' > /dev/null 2>&1
+	/system/bin/ps -u shell -o pid | /system/bin/tail -n+2 | /system/bin/xargs -r -n1 /system/bin/sh -c '/system/bin/renice -p -n -20 $0 > /dev/null 2>&1' > /dev/null 2>&1
+}
+give_me_all_prioriry > /dev/null 2>&1
+rm_double_slash(){
+	if [ $# -lt 1 ]; then
+		/system/bin/sed 's~//~/~g'
+	else
+		/system/bin/echo "$*" | /system/bin/sed 's~//~/~g'
+	fi
+}
+back_dir(){
+	if [ $# -lt 1 ]; then
+		/system/bin/sed -r 's~[^/]+~..~g;s~(^/|/$)~~g'
+	else
+		/system/bin/echo "$*" | /system/bin/sed -r 's~[^/]+~..~g;s~(^/|/$)~~g'
+	fi
+}
+remove_path_prefix(){
+	/system/bin/echo "${2}" | /system/bin/sed -r "s~^${1}~~g"
+}
+
+link_from_rootfs(){
+	local \
+	error_tag="link_from_rootfs Function Error:" \
+	root_system_bins_host_rootfs_dir="$1" \
+	root_system_bins_dir="$2" \
+	dir \
+	dir_fullpath \
+	backdir \
+	local_host_rootfs_fullpath \
+	local_host_rootfs_dir \
+	local_host_rootfs_name
+	if [ -z "${root_system_bins_host_rootfs_dir}" ]; then
+		/system/bin/echo "${error_tag} root_system_bins_host_rootfs_dir variable passed as first argument cannot be null..." >&2
+		return -1
+	fi
+	if [ -z "${root_system_bins_dir}" ]; then
+		/system/bin/echo "${error_tag} root_system_bins_host_rootfs_dir variable passed as second argument cannot be null..." >&2
+		return -1
+	fi
+	if [ ! -e "${root_system_bins_host_rootfs_dir}" ]; then
+		/system/bin/mkdir -p "${root_system_bins_host_rootfs_dir}"
+	fi
+	/system/bin/ln -s /* "${root_system_bins_host_rootfs_dir}" 2>/dev/null
+	/system/bin/find "${root_system_bins_dir}" \( \( -path "${root_system_bins_host_rootfs_dir}" -or -path "${root_system_bins_dir}/data/data" \) -prune \) -or -type l -exec sh -c '/system/bin/realpath -e "$0" > /dev/null 2>&1 || /system/bin/rm "$0"' {} \;
+	local_host_rootfs_name="$(remove_path_prefix "${root_system_bins_dir}" "${root_system_bins_host_rootfs_dir}")"
+	for dir_fullpath in $(/system/bin/find "${root_system_bins_dir}" -mindepth 1 \( \( \( -path "${root_system_bins_host_rootfs_dir}" -or -path "${root_system_bins_dir}/data/data" \) -prune \) -or -type d \)); do
+		if [[ "${dir_fullpath}" == "${root_system_bins_host_rootfs_dir}" ]] ||
+		( /system/bin/echo "${dir_fullpath}" | /system/bin/grep '/data/data/com.termux' > /dev/null ); then
+			continue
+		fi
+		cd "${dir_fullpath}"
+		dir="$(remove_path_prefix "${root_system_bins_dir}" "${dir_fullpath}")"
+		backdir="$(back_dir "$dir")"
+		local_host_rootfs_fullpath="$(rm_double_slash "${dir_fullpath}/${backdir}/${local_host_rootfs_name}/${dir}")"
+		if [ -e "${local_host_rootfs_fullpath}" ]; then
+			local_host_rootfs_dir="$(rm_double_slash "${backdir}/${local_host_rootfs_name}/${dir}")"
+		else
+			if [ -z "$(/system/bin/ls -A "${dir_fullpath}" 2>/dev/null)" ]; then
+				cd - > /dev/null 2>&1
+				/system/bin/rm -rf "${dir_fullpath}"
+				/system/bin/ln -s "${backdir}/${local_host_rootfs_dir}" "${dir_fullpath}" 2> /dev/null
+				continue
+			else
+				/system/bin/echo "${error_tag} Local host rootfs directory not found for '${local_host_rootfs_fullpath}'" >&2
+				cd - > /dev/null 2>&1
+				continue
+			fi
+		fi
+		eval "/system/bin/ln -s ${local_host_rootfs_dir}/* ." 2> /dev/null
+		cd - > /dev/null 2>&1
+	done
+}
+root_system_bins(){
+	local root_system_bins_tar root_system_bins_dir="REPLACE-ME"
+	if [[ "${root_system_bins_dir}" == "REPLACE-ME" ]]; then
+		root_system_bins_tar="$(/system/bin/dirname "$0")/tar_root_system_bins.sh"
+		if [ -e "${root_system_bins_tar}" ]; then
+			/system/bin/echo "Copying Root System Binaries to fix Selinux possible restrictions... Don't worry, it's slow and hard work, but only at the first start." >&2
+			/system/bin/chmod 7777 "${root_system_bins_tar}"
+			proot_mini_termux="${script}" exec /system/bin/sh "${root_system_bins_tar}"
+		else
+			root_system_bins_b(){ :; }
+		fi
+	else
+		root_system_bins_b(){
+			local \
+			base_dir="$(/system/bin/dirname "${script_dir}")" \
+			proot_base_dir \
+			root_system_bins_dir \
+			proot_host_rootfs_dir \
+			root_system_bins_host_rootfs_dir
+
+			proot_base_dir="${script_dir}"
+			root_system_bins_dir="REPLACE-ME"
+
+			proot_host_rootfs_dir="${proot_base_dir}/host-rootfs"
+			root_system_bins_host_rootfs_dir="${root_system_bins_dir}/host-rootfs"
+			binaries_bypass="${proot_base_dir}/binaries_bypass.list"
+
+			if [ -e "${root_system_bins_dir}" ]; then
+				/system/bin/chmod -R 7777 "${root_system_bins_dir}"
+			fi
+			/system/bin/mkdir -p "${proot_host_rootfs_dir}"
+			/system/bin/ln -s /* "${proot_host_rootfs_dir}" 2>/dev/null
+			if [ -e "${root_system_bins_dir}" ] && [ ! -e "${root_system_bins_host_rootfs_dir}" ]; then
+				/system/bin/cp -r "${proot_host_rootfs_dir}" "${root_system_bins_host_rootfs_dir}"
+
+				link_from_rootfs "${root_system_bins_host_rootfs_dir}" "${root_system_bins_dir}"
+				/system/bin/rm -rf "${root_system_bins_host_rootfs_dir}"
+				eval "/system/bin/cp -rf ${root_system_bins_dir}/* ${proot_base_dir}"
+				/system/bin/rm -rf "${root_system_bins_dir}"
+			fi
+			(
+				if [ -e "${binaries_bypass}" ]; then
+					for b in $(/system/bin/cat "${binaries_bypass}"); do
+						/system/bin/echo " -b ${b}:${b}"
+					done
+				fi
+			) | /system/bin/sort -u | /system/bin/xargs -r
+		}
+	fi
+}
+binds(){
+	local base="$(rm_double_slash "$1")" error_tag="binds Function Error:" bind bind_from bind_to
+	if [ ! -e "${base}" ]; then
+		/system/bin/echo "${error_tag} base directory passed as first argument '${base}' need exist, try recreate filesystem first or correct base path on this function call..." >&2
+		exit -1
+	else
+		shift
+	fi
+	/system/bin/rm -rf "${base}/dev" "${base}/proc" "${base}/sys" "${base}/host-rootfs" 2>/dev/null >&2
+	/system/bin/mkdir -p "${base}/host-rootfs" 2>/dev/null >&2
+	link_from_rootfs "${base}/host-rootfs" "${base}"
+	/system/bin/rm -rf "${base}/dev" "${base}/proc" "${base}/sys" 2>/dev/null >&2
+	/system/bin/mkdir -p "${base}/dev" "${base}/proc" "${base}/sys" 2>/dev/null >&2
+	(
+		/system/bin/echo " -r ${base}"
+		for bind in "${base}:/" "/proc" "/tmp" "/sys" "/dev" "/linkerconfig/ld.config.txt" "/:/host-rootfs" "$@" $(/system/bin/mount | /system/bin/cut -d' ' -f3); do
+			if /system/bin/echo "${bind}" | /system/bin/grep ':' > /dev/null 2>&1; then
+				bind_from="$(rm_double_slash "$(/system/bin/echo "${bind}" | /system/bin/cut -d: -f1)")"
+				bind_to="$(rm_double_slash "$(/system/bin/echo "${bind}" | /system/bin/cut -d: -f2-)")"
+			else
+				bind_from="$(rm_double_slash "${bind}")"
+				bind_to="${bind_from}"
+			fi
+			if [ -f "$(rm_double_slash "${base}/${bind_to}")" ] && [ -d "${bind_from}" ]; then
+				/system/bin/rm "$(rm_double_slash "${base}/${bind_to}")"
+			elif [ -d "$(rm_double_slash "${base}/${bind_to}")" ] && [ -f "${bind_from}" ]; then
+				/system/bin/rm -rf "$(rm_double_slash "${base}/${bind_to}")"
+			fi
+			if [ ! -e "$(rm_double_slash "${base}/${bind_to}")" ] && [ -d "${bind_from}" ]; then
+				/system/bin/mkdir -p "$(rm_double_slash "${base}/${bind_to}")"
+			fi
+			if [ -L "${bind_from}" ]; then
+				/system/bin/ln -s "$(/system/bin/readlink "${bind_from}")" "$(rm_double_slash "${base}/${bind_to}")"
+			elif [ -f "$(rm_double_slash "${base}/${bind_to}")" ] || [ ! -L "${bind_from}" ] && [ -e "$(rm_double_slash "${base}/${bind_to}")" ] && (
+				[ -L "$(rm_double_slash "${base}/${bind_to}")" ] ||
+				( [[ "${bind_from}" == "${bind_to}" ]] && [ -z "$(/system/bin/ls -A "$(rm_double_slash "${base}/${bind_to}")" 2>/dev/null)" ] ) ||
+
+				[[ "${bind_from}" != "${bind_to}" ]]
+			); then
+				if [ ! -L "$(rm_double_slash "${base}/${bind_to}")" ] || ! ( /system/bin/readlink "$(rm_double_slash "${base}/${bind_to}")" | /system/bin/grep "/host-rootfs" > /dev/null 2>&1 ); then
+					/system/bin/echo " -b ${bind_from}:${bind_to}"
+				fi
+			fi
+		done
+	) | /system/bin/sort -u | /system/bin/xargs -r
+}
+rm_asterisk(){
+	/system/bin/find "${script_dir}" \( \( -path "${script_dir}/data/data/com.termux" -prune \) -or \( -type l -name '\*' \) \) -delete
+}
+_main_(){
+	local \
+	PREFIX \
+	_PREFIX \
+	__PREFIX="${script_dir}/data/data/com.termux"
+
+	_PREFIX="${__PREFIX}/files"
+	PREFIX="${_PREFIX}/usr"
+	if [ ! -e "${script_dir}/.entry" ]; then
+		root_system_bins
+		/system/bin/find "${script_dir}" \( \( -path "${script_dir}/data/data/com.termux" -prune \) -or \( -type l -name '\*' \) \) -delete
+		/system/bin/cat <<EOF > "${script_dir}/.entry"
+#!/system/bin/sh
+export \\
+	HOME="${_PREFIX}/home" \\
+	PREFIX="${PREFIX}" \\
+	TERM=xterm-256color
+export \\
+	PATH="\${PREFIX}/bin:$PATH" \\
+	LD_LIBRARY_PATH="\${PREFIX}/lib" \\
+	PROOT_TMP_DIR="\${PREFIX}/tmp" \\
+	PROOT_LOADER_32="\${PREFIX}/libexec/proot/loader32" \\
+	PROOT_LOADER="\${PREFIX}/libexec/proot/loader" \\
+	PROOT_L2S_DIR="\${PREFIX}/.l2s"
+env_translate(){
+	local PREFIX="\$1" path_remove env
+	if [ -e "\${PREFIX}" ]; then
+		shift
+		path_remove="\$(/system/bin/echo "\${PREFIX}" | /system/bin/sed 's~/data/data/com.termux/files/usr~~g')"
+		(
+			for env in "\$@"; do
+				eval "/system/bin/echo \\"\${env}=\\\${\${env}//'/\\\\'}\\"" | /system/bin/sed "s~\${path_remove}~~g"
+			done
+		) | /system/bin/xargs -r
+	fi
+}
+exec "\${PREFIX}/bin/proot" \\
+	--link2symlink \\
+	$(binds "${script_dir}")  \\
+	$(root_system_bins_b) \\
+	-w /data/data/com.termux/files/home \\
+	/data/data/com.termux/files/usr/bin/env \\
+		-u _PREFIX -u __PREFIX -u script_dir -u script \\
+		\$(env_translate "\${PREFIX}" "HOME" "PREFIX" "PATH" "LD_LIBRARY_PATH" "PROOT_TMP_DIR" "PROOT_LOADER_32" "PROOT_LOADER" "PROOT_L2S_DIR") \\
+		/data/data/com.termux/files/usr/bin/bash \\
+			/data/data/com.termux/files/usr/bin/login
+EOF
+		rm_asterisk
+		/system/bin/chmod 7777 "${script_dir}/.entry"
+		exec "${script_dir}/.entry"
+	else
+		/system/bin/chmod 7777 "${script_dir}/.entry"
+		exec "${script_dir}/.entry"
+	fi
+}
+_main_ "$@"

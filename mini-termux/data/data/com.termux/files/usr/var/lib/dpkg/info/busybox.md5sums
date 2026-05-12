@@ -1,0 +1,15 @@
+5e9b9b4aa3a1ecf7b84c87aca8ae1fc5  data/data/com.termux/files/usr/bin/busybox
+7baa69e148054a4d2101158fb2f21f8b  data/data/com.termux/files/usr/lib/libbusybox.so.1.37.0
+a13b4595358446b3a05dbf1c72354f9a  data/data/com.termux/files/usr/libexec/busybox/less
+dc7aa7d2ec4a67bc029f8073909d15a5  data/data/com.termux/files/usr/libexec/busybox/nc
+f1064417cf4e144d1d3d972e6911c9c5  data/data/com.termux/files/usr/libexec/busybox/vi
+59c16f48411bcede972a1f60f02f1efc  data/data/com.termux/files/usr/share/man/man1/busybox.1.gz
+d41d8cd98f00b204e9800998ecf8427e  data/data/com.termux/files/usr/var/service/busybox-httpd/down
+e101305a23cca988db5409a713e8c8d0  data/data/com.termux/files/usr/var/service/busybox-httpd/log/run
+98e6c6aaadc659a8ef7a08b54490a119  data/data/com.termux/files/usr/var/service/busybox-httpd/run
+d41d8cd98f00b204e9800998ecf8427e  data/data/com.termux/files/usr/var/service/ftpd/down
+e101305a23cca988db5409a713e8c8d0  data/data/com.termux/files/usr/var/service/ftpd/log/run
+e71f27df654338bcd4e6903f876233f0  data/data/com.termux/files/usr/var/service/ftpd/run
+d41d8cd98f00b204e9800998ecf8427e  data/data/com.termux/files/usr/var/service/telnetd/down
+e101305a23cca988db5409a713e8c8d0  data/data/com.termux/files/usr/var/service/telnetd/log/run
+43aea8c09b578766dcf4f8c0c69e324d  data/data/com.termux/files/usr/var/service/telnetd/run

@@ -1,0 +1,22 @@
+update-alternatives 2026-05-09 17:54:07: run with --install /data/data/com.termux/files/usr/bin/pager pager /data/data/com.termux/files/usr/bin/less 50 --slave /data/data/com.termux/files/usr/share/man/man1/pager.1.gz pager.1.gz /data/data/com.termux/files/usr/share/man/man1/less.1.gz
+update-alternatives 2026-05-09 17:54:07: link group pager updated to point to /data/data/com.termux/files/usr/bin/less
+update-alternatives 2026-05-09 17:54:07: updating manpage database...
+update-alternatives 2026-05-09 17:54:12: run with --install /data/data/com.termux/files/usr/bin/pager pager /data/data/com.termux/files/usr/bin/more 25 --slave /data/data/com.termux/files/usr/share/man/man1/pager.1.gz pager.1.gz /data/data/com.termux/files/usr/share/man/man1/more.1.gz
+update-alternatives 2026-05-09 17:54:12: run with --install /data/data/com.termux/files/usr/bin/vi vi /data/data/com.termux/files/usr/libexec/busybox/vi 10
+update-alternatives 2026-05-09 17:54:12: link group vi updated to point to /data/data/com.termux/files/usr/libexec/busybox/vi
+update-alternatives 2026-05-09 17:54:12: updating manpage database...
+update-alternatives 2026-05-09 17:54:15: run with --install /data/data/com.termux/files/usr/bin/editor editor /data/data/com.termux/files/usr/libexec/busybox/vi 10
+update-alternatives 2026-05-09 17:54:15: link group editor updated to point to /data/data/com.termux/files/usr/libexec/busybox/vi
+update-alternatives 2026-05-09 17:54:15: updating manpage database...
+update-alternatives 2026-05-09 17:54:17: run with --install /data/data/com.termux/files/usr/bin/pager pager /data/data/com.termux/files/usr/libexec/busybox/less 10
+update-alternatives 2026-05-09 17:54:17: run with --install /data/data/com.termux/files/usr/bin/nc nc /data/data/com.termux/files/usr/libexec/busybox/nc 10 --slave /data/data/com.termux/files/usr/bin/ncat ncat /data/data/com.termux/files/usr/libexec/busybox/nc --slave /data/data/com.termux/files/usr/bin/netcat netcat /data/data/com.termux/files/usr/libexec/busybox/nc
+update-alternatives 2026-05-09 17:54:17: link group nc updated to point to /data/data/com.termux/files/usr/libexec/busybox/nc
+update-alternatives 2026-05-09 17:54:17: updating manpage database...
+update-alternatives 2026-05-09 17:54:20: run with --install /data/data/com.termux/files/usr/bin/pager pager /data/data/com.termux/files/usr/libexec/coreutils/cat 1 --slave /data/data/com.termux/files/usr/share/man/man1/pager.1.gz pager.1.gz /data/data/com.termux/files/usr/share/man/man1/cat.1.gz
+update-alternatives 2026-05-09 19:14:30: run with --install /data/data/com.termux/files/usr/bin/pager pager /data/data/com.termux/files/usr/bin/less 50 --slave /data/data/com.termux/files/usr/share/man/man1/pager.1.gz pager.1.gz /data/data/com.termux/files/usr/share/man/man1/less.1.gz
+update-alternatives 2026-05-09 19:14:30: run with --install /data/data/com.termux/files/usr/bin/pager pager /data/data/com.termux/files/usr/bin/more 25 --slave /data/data/com.termux/files/usr/share/man/man1/pager.1.gz pager.1.gz /data/data/com.termux/files/usr/share/man/man1/more.1.gz
+update-alternatives 2026-05-09 19:14:30: run with --install /data/data/com.termux/files/usr/bin/vi vi /data/data/com.termux/files/usr/libexec/busybox/vi 10
+update-alternatives 2026-05-09 19:14:31: run with --install /data/data/com.termux/files/usr/bin/editor editor /data/data/com.termux/files/usr/libexec/busybox/vi 10
+update-alternatives 2026-05-09 19:14:31: run with --install /data/data/com.termux/files/usr/bin/pager pager /data/data/com.termux/files/usr/libexec/busybox/less 10
+update-alternatives 2026-05-09 19:14:31: run with --install /data/data/com.termux/files/usr/bin/nc nc /data/data/com.termux/files/usr/libexec/busybox/nc 10 --slave /data/data/com.termux/files/usr/bin/ncat ncat /data/data/com.termux/files/usr/libexec/busybox/nc --slave /data/data/com.termux/files/usr/bin/netcat netcat /data/data/com.termux/files/usr/libexec/busybox/nc
+update-alternatives 2026-05-09 19:14:31: run with --install /data/data/com.termux/files/usr/bin/pager pager /data/data/com.termux/files/usr/libexec/coreutils/cat 1 --slave /data/data/com.termux/files/usr/share/man/man1/pager.1.gz pager.1.gz /data/data/com.termux/files/usr/share/man/man1/cat.1.gz

@@ -1,0 +1,12 @@
+auto
+/data/data/com.termux/files/usr/bin/nc
+ncat
+/data/data/com.termux/files/usr/bin/ncat
+netcat
+/data/data/com.termux/files/usr/bin/netcat
+
+/data/data/com.termux/files/usr/libexec/busybox/nc
+10
+/data/data/com.termux/files/usr/libexec/busybox/nc
+/data/data/com.termux/files/usr/libexec/busybox/nc
+

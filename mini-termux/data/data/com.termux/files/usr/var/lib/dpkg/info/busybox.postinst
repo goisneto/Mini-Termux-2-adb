@@ -1,0 +1,21 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# Automatically added by termux_step_update_alternatives
+if [ "$1" = 'configure' ] || [ "$1" = 'abort-upgrade' ] || [ "$1" = 'abort-deconfigure' ] || [ "$1" = 'abort-remove' ] || [ "debian" = 'pacman' ]; then
+  if [ -x "/data/data/com.termux/files/usr/bin/update-alternatives" ]; then
+    # vi
+    update-alternatives \
+      --install "/data/data/com.termux/files/usr/bin/vi" "vi" "/data/data/com.termux/files/usr/libexec/busybox/vi" 10
+    # editor
+    update-alternatives \
+      --install "/data/data/com.termux/files/usr/bin/editor" "editor" "/data/data/com.termux/files/usr/libexec/busybox/vi" 10
+    # pager
+    update-alternatives \
+      --install "/data/data/com.termux/files/usr/bin/pager" "pager" "/data/data/com.termux/files/usr/libexec/busybox/less" 10
+    # nc
+    update-alternatives \
+      --install "/data/data/com.termux/files/usr/bin/nc" "nc" "/data/data/com.termux/files/usr/libexec/busybox/nc" 10 \
+      --slave "/data/data/com.termux/files/usr/bin/ncat" "ncat" "/data/data/com.termux/files/usr/libexec/busybox/nc" \
+      --slave "/data/data/com.termux/files/usr/bin/netcat" "netcat" "/data/data/com.termux/files/usr/libexec/busybox/nc"
+  fi
+fi
+# End automatically added section
